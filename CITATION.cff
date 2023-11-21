@@ -1,0 +1,38 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Feasible Edge Replacements - Class and Algorithms
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Tonatiuh
+    family-names: Matos Wiederhold
+    email: tonamatos@gmail.com
+    affiliation: University of Toronto
+    orcid: 'https://orcid.org/0000-0002-3142-037X'
+repository-code: 'https://github.com/tonamatos/Feasible-Edge-Replacements'
+abstract: >-
+  Class of objects for working with general feasible edge
+  replacements to study Amoeba graphs. Also algorithms based
+  on a WIP research paper to factor permutations in
+  recursive Amoeba trees efficiently.
+keywords:
+  - Graph theory
+  - Research
+  - Combinatorics
+  - Algorithm
+  - Amoebas
+  - Amoeba graphs
+  - Amoeba trees
+  - Recursive amoebas
+  - Balancing number
+  - Ramsey theory
+  - Algebra
+  - Algebraic graph theory
+license: MIT
+commit: e9d98d17bce193b1ff7aa1d255874cbac6176d92
+version: 1.0.0
+date-released: '2023-11-27'
