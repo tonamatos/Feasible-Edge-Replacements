@@ -1,7 +1,7 @@
 # Feasible Edge Replacements - Class and Algorithms
 
 <p align="center">
-<img src="./Readme_Pics/k6.gif" width="180"/>
+<img src="./Readme_Pics/k6.gif" width="300"/>
 </p>
 
 ## About
