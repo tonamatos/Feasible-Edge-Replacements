@@ -1,23 +1,16 @@
 # Feasible Edge Replacements - Class and Algorithms
 
-<table>
-
-<tr>
-<td>
-
 ## About
 
+<table>
+<tr>
+<td>
 This repo contains four things:
 
 - A class for `Fer` objects in **feasible_edge_replacement.py**.
 - Some general methods for the study of amoeba graphs in **amoebas.py**. In particular, a method for finding `Fer` generators (called `updating_Cayley_populate`), something that is referenced but left out of [1].
 - An implementation of the algorithm of [1] in **main.py**.
 - A construction of a recursive family of amoebas to apply the algorithm to, for illustrative purposes, in **treebonacci.py**.
-
-Every `Fer` object has two attributes: a sequence of feasible edge replacements and its corresponding permutation. The length of a sequence can be obtained by `len(fer)`. The product `*` of two `Fer` objects multiplies their permutations and concatenates the edge replacements, updating the labels. 
-> Note that products are written **left-to-right**, in contrast with traditional algebraic notation.<br/>
-
-The algorithm produces a hash map that links every permutation in a generating set of the symmetric group to a `Fer` object.
 
 </td>
 <td>
@@ -29,6 +22,11 @@ The algorithm produces a hash map that links every permutation in a generating s
 </td>
 </tr>
 </table>
+
+Every `Fer` object has two attributes: a sequence of feasible edge replacements and its corresponding permutation. The length of a sequence can be obtained by `len(fer)`. The product `*` of two `Fer` objects multiplies their permutations and concatenates the edge replacements, updating the labels. 
+> Note that products are written **left-to-right**, in contrast with traditional algebraic notation.<br/>
+
+The algorithm produces a hash map that links every permutation in a generating set of the symmetric group to a `Fer` object.
 
 ## Mathematical context
 
