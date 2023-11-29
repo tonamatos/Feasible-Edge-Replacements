@@ -1,8 +1,9 @@
 # Feasible Edge Replacements - Class and Algorithms
 
-<p align="center">
-<img src="./k6.gif" width="300"/>
-</p>
+<table>
+
+<tr>
+<td>
 
 ## About
 
@@ -17,6 +18,17 @@ Every `Fer` object has two attributes: a sequence of feasible edge replacements 
 > Note that products are written **left-to-right**, in contrast with traditional algebraic notation.<br/>
 
 The algorithm produces a hash map that links every permutation in a generating set of the symmetric group to a `Fer` object.
+
+</td>
+<td>
+
+<p align="center">
+<img src="./k6.gif" width="300"/>
+</p>
+
+</td>
+</tr>
+</table>
 
 ## Mathematical context
 
