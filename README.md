@@ -60,6 +60,6 @@ Here is a minimal working example on how to use the main features of this repo:
 
 ## References
 
-[1] <a href="">Eslava, L., Hansberg, A., Matos Wiederhold, T., Ventura, D., *New recursive constructions of amoebas and their balancing number*, **preprint**, 2023.</a><br/>
+[1] <a href="http://arxiv.org/abs/2311.17182">Eslava, L., Hansberg, A., Matos Wiederhold, T., Ventura, D., *New recursive constructions of amoebas and their balancing number*, **preprint**, 2023.</a><br/>
 
 [2] <a href="https://www.combinatorics.org/ojs/index.php/eljc/article/download/v30i3p9/pdf/">Caro, Y., Hansberg, A., Montejano, A. (2023). *Graphs isomorphisms under edge-replacements and the family of amoebas*. **Electronic Journal of Combinatorics 30(3) P3.9**</a><br/>
