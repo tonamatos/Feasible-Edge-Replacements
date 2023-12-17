@@ -28,7 +28,7 @@ Every `Fer` object has two attributes: a sequence of feasible edge replacements 
 
 The algorithm produces a hash map that links every permutation in a generating set of the symmetric group to a `Fer` object.
 
-## Mathematical context
+## Mathematical background
 
 Let $G$ be a graph and $e$ an edge of $G$. We say $(e\to g)$ is a *feasible edge replacement* (`Fer`, for short) if $G-e+g$ is isomorphic to $G$. We say a graph is an *amoeba* is it can be transformed into any isomorphic copy of itself by means of a sequence of `Fer` objects. For more details on amoebas and the difference between *local* and *global* amoebas, consult [2].
 
