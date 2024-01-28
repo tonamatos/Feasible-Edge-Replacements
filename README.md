@@ -5,19 +5,19 @@
 <table>
 <tr>
 <td>
+
+<p align="center">
+<img src="./k6.gif" width="300"/>
+</p>
+
+</td>
+<td>
 This repo contains four things:
 
 - A class for `Fer` objects in **feasible_edge_replacement.py**.
 - Some general methods for the study of amoeba graphs in **amoebas.py**. In particular, a method for finding `Fer` generators (called `updating_Cayley_populate`), something that is referenced but left out of [1].
 - An implementation of the algorithm of [1] in **main.py**.
 - A construction of a recursive family of amoebas to apply the algorithm to, for illustrative purposes, in **treebonacci.py**.
-
-</td>
-<td>
-
-<p align="center">
-<img src="./k6.gif" width="300"/>
-</p>
 
 </td>
 </tr>
@@ -56,11 +56,26 @@ Here is a minimal working example on how to use the main features of this repo:
 
 ### This program was developed by
 
+<table>
+<tr>
+<td>
+
 - Tonatiuh Matos Wiederhold<br/>
   Dept. of Mathematics, University of Toronto, Canada.<br/>
   tonamatos@gmail.com
 
-Based on the research of [1], below.
+  Based on the research of [1], below.
+
+</td>
+<td>
+
+<p align="center">
+<img src="./Ammonia_tepida.jpg" width="300"/>
+</p>
+
+</td>
+</tr>
+</table>
 
 ## References
 
