@@ -25,7 +25,7 @@ def change_edge(g, e, ne):
   return g1
 
 def is_feasible_edge_replacement(g, e, ne):
-  if are_graphs_isomorphic(g, change_edge(g, e, ne)):
+  if nx.is_isomorphic(g, change_edge(g, e, ne), node_match=lambda x, y: x['color'] == y['color']):
     GM = isomorphism.GraphMatcher(g, change_edge(g, e, ne))
     return list(GM.subgraph_isomorphisms_iter())
   else:
@@ -50,24 +50,6 @@ def perms_all_feasible_edge_replacements(graph):
       if isos:
         perms.extend([Per(dict_to_perm(x)) for x in isos])
   return PermutationGroup(perms)
-
-def graph_has_same_labels(graph1, graph2):
-  labels1 = {n: graph1.nodes[n].get('label') for n in graph1.nodes}
-  labels2 = {n: graph2.nodes[n].get('label') for n in graph2.nodes}
-    
-  return labels1 == labels2
-
-def are_graphs_isomorphic(graph1, graph2):
-    if not graph_has_same_labels(graph1, graph2):
-      return False
-
-    # Check for isomorphism by considering all permutations of nodes
-    for perm in permutations(graph2.nodes):
-      mapping = dict(zip(graph1.nodes, perm))
-      if nx.is_isomorphic(graph1, nx.relabel_nodes(graph2, mapping)):
-        return True
-
-    return False
 
 def isLocalColoredAmoeba(colored_graph):
   '''
