@@ -7,12 +7,84 @@ Created on Tue Oct 31 12:42:46 2023
 from feasible_edge_replacement import Feasible_edge_replacement as Fer
 
 import networkx as nx
+from networkx.algorithms import isomorphism
+from math import factorial
 from time import time
 from sympy.combinatorics.permutations import Permutation as Per
 from sympy.combinatorics.perm_groups import PermutationGroup
 import matplotlib.pyplot as plt
-from itertools import product
+from itertools import product, permutations
 #from functools import cache
+
+# DECISION ALGORITHMS
+
+def change_edge(g, e, ne):
+  g1 = g.copy()
+  g1.remove_edge(*e)
+  g1.add_edge(*ne)
+  return g1
+
+def is_feasible_edge_replacement(g, e, ne):
+  if are_graphs_isomorphic(g, change_edge(g, e, ne)):
+    GM = isomorphism.GraphMatcher(g, change_edge(g, e, ne))
+    return list(GM.subgraph_isomorphisms_iter())
+  else:
+    return False
+
+def dict_to_perm(d):
+  """Change a dict d to a list the_list so that d[i] becomes the same as the_list[i]"""
+  the_list = []
+  for i in range(len(d)):
+    the_list.append(d[i])
+  return the_list
+
+def perms_all_feasible_edge_replacements(graph):
+  n = graph.order()
+  perms = []
+  edges = graph.edges()
+  nonedges = combinations(graph.nodes(), 2)
+  nonedges = [(x, y) for (x, y) in nonedges if not (x, y) in edges and not (y, x) in edges]
+  for e in edges:
+    for ne in nonedges+[e]:
+      isos = is_feasible_edge_replacement(graph, e, ne)
+      if isos:
+        perms.extend([Permutation(dict_to_perm(x)) for x in isos])
+  return PermutationGroup(perms)
+
+def graph_has_same_labels(graph1, graph2):
+  labels1 = {n: graph1.nodes[n].get('label') for n in graph1.nodes}
+  labels2 = {n: graph2.nodes[n].get('label') for n in graph2.nodes}
+    
+  return labels1 == labels2
+
+def are_graphs_isomorphic(graph1, graph2):
+    if not graph_has_same_labels(graph1, graph2):
+      return False
+
+    # Check for isomorphism by considering all permutations of nodes
+    for perm in permutations(graph2.nodes):
+      mapping = dict(zip(graph1.nodes, perm))
+      if nx.is_isomorphic(graph1, nx.relabel_nodes(graph2, mapping)):
+        return True
+
+    return False
+
+def isLocalColoredAmoeba(colored_graph):
+  '''
+  Given a networkX object colored_graph, decides if it is a local amoeba.
+  colored_graph must have a vertex coloring of the form [1,...,k].
+  '''
+  print("Warning: algorithm implemented in brute force, extremely inefficient!")
+  time0 = time()
+  G = colored_graph.copy()
+  for node in G.nodes():
+    G.nodes[node]['label'] = G.nodes[node]['color']
+  nf = factorial(G.order())
+  count = perms_all_feasible_edge_replacements(G).order()
+  print("Time taken:",time()-time0)
+  return count == nf
+
+# GENERATORS
 
 def cayley_graph_maker(group, generators):
   cayley_graph = nx.DiGraph()
