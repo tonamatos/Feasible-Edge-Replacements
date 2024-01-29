@@ -48,7 +48,7 @@ def perms_all_feasible_edge_replacements(graph):
     for ne in nonedges+[e]:
       isos = is_feasible_edge_replacement(graph, e, ne)
       if isos:
-        perms.extend([Permutation(dict_to_perm(x)) for x in isos])
+        perms.extend([Per(dict_to_perm(x)) for x in isos])
   return PermutationGroup(perms)
 
 def graph_has_same_labels(graph1, graph2):
