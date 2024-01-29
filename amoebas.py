@@ -13,7 +13,7 @@ from time import time
 from sympy.combinatorics.permutations import Permutation as Per
 from sympy.combinatorics.perm_groups import PermutationGroup
 import matplotlib.pyplot as plt
-from itertools import product, permutations
+from itertools import product, combinations
 #from functools import cache
 
 # DECISION ALGORITHMS
