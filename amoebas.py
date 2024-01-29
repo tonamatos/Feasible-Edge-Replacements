@@ -25,8 +25,9 @@ def change_edge(g, e, ne):
   return g1
 
 def is_feasible_edge_replacement(g, e, ne):
-  if nx.is_isomorphic(g, change_edge(g, e, ne), node_match=lambda x, y: x['color'] == y['color']):
-    GM = isomorphism.GraphMatcher(g, change_edge(g, e, ne))
+  nm = node_match=lambda x, y: x['color'] == y['color']
+  if nx.is_isomorphic(g, change_edge(g, e, ne), node_match=nm):
+    GM = isomorphism.GraphMatcher(g, change_edge(g, e, ne), node_match=nm)
     return list(GM.subgraph_isomorphisms_iter())
   else:
     return False
@@ -51,6 +52,17 @@ def perms_all_feasible_edge_replacements(graph):
         perms.extend([Per(dict_to_perm(x)) for x in isos])
   return PermutationGroup(perms)
 
+def color_count(G):
+  color_counts = {}
+  for node, data in G.nodes(data=True):
+      color = data.get('color')
+      if color in color_counts:
+          color_counts[color] += 1
+      else:
+          color_counts[color] = 1
+
+  return color_counts
+
 def isLocalColoredAmoeba(colored_graph):
   '''
   Given a networkX object colored_graph, decides if it is a local amoeba.
@@ -59,13 +71,18 @@ def isLocalColoredAmoeba(colored_graph):
   print("Warning: algorithm implemented in brute force, extremely inefficient!")
   time0 = time()
   G = colored_graph.copy()
-  for node in G.nodes():
-    G.nodes[node]['label'] = G.nodes[node]['color']
-  nf = factorial(G.order())
+  
+  c_count = color_count(G)
+  full_group = 1
+
+  for color, count in c_count.items():
+    full_group *= factorial(count)
+
   count = perms_all_feasible_edge_replacements(G).order()
   print("Time taken:",time()-time0)
-  return count == nf
-
+  print(full_group)
+  return count == full_group
+  
 # GENERATORS
 
 def cayley_graph_maker(group, generators):
