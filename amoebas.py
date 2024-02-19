@@ -24,6 +24,15 @@ def edge_replace(graph, old_edge, new_edge):
   new_graph.add_edge(*new_edge)
   return new_graph
 
+def iso_invert(iso):
+  '''
+  Inverts an isomorphism given as hash_map {0:,1:,...}
+  '''
+  inverse = {}
+  for key, value in iso.items():
+    inverse[value] = key
+  return inverse
+
 def isFer(colored_graph, old_edge, new_edge, allIso=False):
   '''
   Given NetworkX colored_graph and old_edge=(i,j), new_edge=(x,y), decides
@@ -38,7 +47,7 @@ def isFer(colored_graph, old_edge, new_edge, allIso=False):
 
   # Option to return all isomorphisms
   if allIso:
-    list_all_iso = list(GM.subgraph_isomorphisms_iter())
+    list_all_iso = [iso_invert(iso) for iso in GM.subgraph_isomorphisms_iter()]
     if list_all_iso:
       return list_all_iso
     else:
@@ -46,7 +55,7 @@ def isFer(colored_graph, old_edge, new_edge, allIso=False):
 
   # Else, just return the first one that the GraphMatcher finds.
   try:
-    first_iso = next(GM.subgraph_isomorphisms_iter())
+    first_iso = iso_invert(next(GM.subgraph_isomorphisms_iter()))
     return first_iso
   except StopIteration:
     return False
@@ -71,7 +80,7 @@ def FerGroup(colored_graph):
   alledges = combinations(nodes, 2)
   nonedges = [(x, y) for (x, y) in alledges if not (x, y) in edges and not (y, x) in edges]
   
-  id_per = Per(n) # Identity is always feasible.
+  id_per = Per(n-1) # Identity is always feasible.
   fers = {tuple(id_per) : Fer(old_edge=(0,1), new_edge=(0,1), permutation=id_per)}
 
   # Iterate over all possible edge-replacements. If feasible, add to hash_map.
@@ -79,6 +88,7 @@ def FerGroup(colored_graph):
     for new_edge in nonedges:
       iso = isFer(colored_graph, old_edge, new_edge)
       if iso:
+        
         iso_tuple = tuple(iso[key] for key in iso.keys())
         fers[iso_tuple] = Fer(old_edge=old_edge, new_edge=new_edge, permutation=Per(iso_tuple))
 
