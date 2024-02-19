@@ -72,7 +72,7 @@ def FerGroup(colored_graph):
   nonedges = [(x, y) for (x, y) in alledges if not (x, y) in edges and not (y, x) in edges]
   
   id_per = Per(n) # Identity is always feasible.
-  fers = {id_per : Fer(old_edge=(0,1), new_edge=(0,1), permutation=id_per)}
+  fers = {tuple(id_per) : Fer(old_edge=(0,1), new_edge=(0,1), permutation=id_per)}
 
   # Iterate over all possible edge-replacements. If feasible, add to hash_map.
   for old_edge in edges:
@@ -107,11 +107,11 @@ def isLocalColoredAmoeba(colored_graph):
   for color, count in c_count.items():
     full_group *= factorial(count)
 
-  group = PermutationGroup([per for per in FerGroup(colored_graph).keys()])
-  count = group.order()
+  group = PermutationGroup([fer.seq_perm for fer in FerGroup(colored_graph).values()])
+  order = group.order()
   print("Time taken:",time()-time0)
-  print("Expected size =", full_group, "real size =", count)
-  return count == full_group
+  print("Expected size =", full_group, "real size =", order)
+  return order == full_group
   
 # GENERATORS
 
