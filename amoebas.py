@@ -89,7 +89,7 @@ def FerGroup(colored_graph):
       iso = isFer(colored_graph, old_edge, new_edge)
       if iso:
         print("Adding", iso,':',old_edge, '->', new_edge)
-        iso_tuple = tuple(iso[i] for i in len(iso))
+        iso_tuple = tuple(iso[i] for i in range(len(iso)))
         fers[iso_tuple] = Fer(old_edge=old_edge, new_edge=new_edge, permutation=Per(iso_tuple))
 
   return fers
