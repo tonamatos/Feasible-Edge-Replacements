@@ -79,8 +79,8 @@ def FerGroup(colored_graph):
     for new_edge in nonedges:
       iso = isFer(colored_graph, old_edge, new_edge)
       if iso:
-        per = Per(iso)
-        fers[tuple(per)] = Fer(old_edge=old_edge, new_edge=new_edge, permutation=per)
+        iso_tuple = tuple(iso[key] for key in iso.keys())
+        fers[iso_tuple] = Fer(old_edge=old_edge, new_edge=new_edge, permutation=Per(iso_tuple))
 
   return fers
 
