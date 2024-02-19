@@ -18,18 +18,37 @@ from itertools import product, combinations, permutations
 
 # DECISION ALGORITHMS
 
-def change_edge(g, e, ne):
-  g1 = g.copy()
-  g1.remove_edge(*e)
-  g1.add_edge(*ne)
-  return g1
+def edge_replace(graph, old_edge, new_edge):
+  new_graph = graph.copy()
+  new_graph.remove_edge(*old_edge)
+  new_graph.add_edge(*new_edge)
+  return new_graph
 
-def is_feasible_edge_replacement(g, e, ne):
-  nm = node_match=lambda x, y: x['color'] == y['color']
-  if nx.is_isomorphic(g, change_edge(g, e, ne), node_match=nm):
-    GM = isomorphism.GraphMatcher(g, change_edge(g, e, ne), node_match=nm)
-    return list(GM.subgraph_isomorphisms_iter())
-  else:
+def isFer(colored_graph, old_edge, new_edge, allIso=False):
+  '''
+  Given NetworkX colored_graph and old_edge=(i,j), new_edge=(x,y), decides
+  if removing old_edge and adding new_edge produces a graph color-
+  isomorphic to the original graph. Returns some isomorphism if True
+  and False otherwise. Setting allIso=True, returns all color-isomorphisms
+  that correspond to the edge-replacement.
+  '''
+  color_match = lambda x, y: x['color'] == y['color']
+  graph_replaced = edge_replace(colored_graph, old_edge, new_edge)
+  GM = isomorphism.GraphMatcher(colored_graph, graph_replaced, node_match=color_match)
+
+  # Option to return all isomorphisms
+  if allIso:
+    list_all_iso = list(GM.subgraph_isomorphisms_iter())
+    if list_all_iso:
+      return list_all_iso
+    else:
+      return False
+
+  # Else, just return the first one that the GraphMatcher finds.
+  try:
+    first_iso = next(GM.subgraph_isomorphisms_iter())
+    return first_iso
+  except StopIteration:
     return False
 
 def dict_to_perm(d):
@@ -39,18 +58,31 @@ def dict_to_perm(d):
     the_list.append(d[i])
   return the_list
 
-def perms_all_feasible_edge_replacements(graph):
-  n = graph.order()
-  perms = []
-  edges = graph.edges()
-  nonedges = combinations(graph.nodes(), 2)
-  nonedges = [(x, y) for (x, y) in nonedges if not (x, y) in edges and not (y, x) in edges]
-  for e in edges:
-    for ne in nonedges+[e]:
-      isos = is_feasible_edge_replacement(graph, e, ne)
-      if isos:
-        perms.extend([Per(dict_to_perm(x)) for x in isos])
-  return PermutationGroup(perms)
+def FerGroup(colored_graph):
+  '''
+  Given a NetworkX colored_graph, returns the group of all Fer objects associated to a single
+  feasible edge-replacement as a hash map, linking permutations to their Fer object.
+  Whose sequence has length 1. If this group generates the
+  maximum possible group or not will determine of colored_graph is a colored amoeba.
+  '''
+  edges = colored_graph.edges()
+  nodes = colored_graph.nodes()
+  n = len(nodes)
+  alledges = combinations(nodes, 2)
+  nonedges = [(x, y) for (x, y) in alledges if not (x, y) in edges and not (y, x) in edges]
+  
+  id_per = Per(n) # Identity is always feasible.
+  fers = {id_per : Fer(old_edge=(0,1), new_edge=(0,1), permutation=id_per)}
+
+  # Iterate over all possible edge-replacements. If feasible, add to hash_map.
+  for old_edge in edges:
+    for new_edge in nonedges:
+      iso = isFer(colored_graph, old_edge, new_edge)
+      if iso:
+        per = Per(iso)
+        fers[tuple(per)] = Fer(old_edge=old_edge, new_edge=new_edge, permutation=per)
+
+  return fers
 
 def color_count(G):
   color_counts = {}
@@ -66,21 +98,19 @@ def color_count(G):
 def isLocalColoredAmoeba(colored_graph):
   '''
   Given a networkX object colored_graph, decides if it is a local amoeba.
-  colored_graph must have a vertex coloring of the form [1,...,k].
   '''
   print("Warning: algorithm implemented in brute force, extremely inefficient!")
   time0 = time()
-  G = colored_graph.copy()
-  
-  c_count = color_count(G)
+  c_count = color_count(colored_graph)
   full_group = 1
 
   for color, count in c_count.items():
     full_group *= factorial(count)
 
-  count = perms_all_feasible_edge_replacements(G).order()
+  group = PermutationGroup([per for per in FerGroup(colored_graph).keys()])
+  count = group.order()
   print("Time taken:",time()-time0)
-  print(full_group)
+  print("Expected size =", full_group, "real size =", count)
   return count == full_group
   
 # GENERATORS

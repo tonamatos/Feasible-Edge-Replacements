@@ -164,7 +164,6 @@ class Feasible_edge_replacement:
     
     return ferd_edges == perm_edges
 
-
  # ================== OBSOLETE CODE ==================
 
   '''
