@@ -88,7 +88,6 @@ def FerGroup(colored_graph):
     for new_edge in nonedges:
       iso = isFer(colored_graph, old_edge, new_edge)
       if iso:
-        print("Adding", iso,':',old_edge, '->', new_edge)
         iso_tuple = tuple(iso[i] for i in range(len(iso)))
         fers[iso_tuple] = Fer(old_edge=old_edge, new_edge=new_edge, permutation=Per(iso_tuple))
 
@@ -109,7 +108,7 @@ def isLocalColoredAmoeba(colored_graph):
   '''
   Given a networkX object colored_graph, decides if it is a local amoeba.
   '''
-  print("Warning: algorithm implemented in brute force, extremely inefficient!")
+  #print("Warning: algorithm implemented in brute force, extremely inefficient!")
   time0 = time()
   c_count = color_count(colored_graph)
   full_group = 1
@@ -120,7 +119,7 @@ def isLocalColoredAmoeba(colored_graph):
   group = PermutationGroup([fer.seq_perm for fer in FerGroup(colored_graph).values()])
   order = group.order()
   print("Time taken:",time()-time0)
-  print("Expected size =", full_group, "real size =", order)
+  print("There are", full_group, "color-compliant permutations and", order, "are associated to Fer objects.")
   return order == full_group
   
 # GENERATORS
