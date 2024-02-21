@@ -1,5 +1,11 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Oct 31 12:42:46 2023
+
+@author: Tonatiuh Matos
+"""
 from sympy.combinatorics.permutations import Permutation
-import networkx as nx
+#import networkx as nx
 
 class Feasible_edge_replacement:
   '''
@@ -8,6 +14,9 @@ class Feasible_edge_replacement:
   '''
   class Individual_Fer:
     def __init__(self, old_edge, new_edge):
+      if not isinstance(old_edge, set) or not isinstance(new_edge, set):
+        raise TypeError("Edges must be sets (not tuples).")
+
       self.old_edge = old_edge
       self.new_edge = new_edge
 
@@ -18,7 +27,7 @@ class Feasible_edge_replacement:
       x, y = self.new_edge
       return f"({i}\\ {j} \\to {x}\\ {y})"
 
-    def __add__(self, other):
+    def __add__(self, other): # Shifts edge labels by other (int).
       i, j = self.old_edge
       x, y = self.new_edge
       return Feasible_edge_replacement.Individual_Fer({i + other, j + other}, {x + other, y + other})
@@ -31,7 +40,7 @@ class Feasible_edge_replacement:
       
       return f"({i} {j} -> {x} {y})"
 
-    def update(self, permutation):
+    def _update(self, permutation):
       '''
       Updates the labels of the edge replacement according to the given permutation.
       The intended use is when multiplying with a sequence on the left. Can also use
@@ -63,7 +72,7 @@ class Feasible_edge_replacement:
       self.sequence = [ind_fer_to_add]
       self.seq_perm = permutation
 
-  def __add__(self, other):
+  def __add__(self, other): # Shifts all labels in object by other.
     new_seq = [fer + other for fer in self.sequence]
     old_per = self.seq_perm
     new_siz = old_per.size + other
@@ -72,7 +81,7 @@ class Feasible_edge_replacement:
 
     return Feasible_edge_replacement(permutation=new_per, sequence=new_seq)
 
-  def tex(self):
+  def tex(self): # Creates tex-formatted str for use in manim library.
     if not self.sequence:
       return '[]'
     string = ''
@@ -80,7 +89,7 @@ class Feasible_edge_replacement:
       string = string + ind_fer.tex()
     return string
 
-  def __str__(self):
+  def __str__(self): # Prints in format permutation::(a -> b)(...)
     if not self.sequence:
       return '[]'
     string = ''
@@ -91,14 +100,18 @@ class Feasible_edge_replacement:
   def __len__(self):
     return len(self.sequence)
 
-  def simplify(self):
+  def _simplify_once(self):
+    '''
+    Shortens the length of the sequence by removing repetitions or replacements that cancel out.
+    '''
     new_seq = [fer for fer in self.sequence]
     for i in range(len(new_seq)):
+
       # Don't add fers that cancel out.
       if i+1 < len(new_seq) and new_seq[i].new_edge == new_seq[i+1].old_edge and new_seq[i].old_edge == new_seq[i+1].new_edge:
         new_seq.pop(i)
         new_seq.pop(i)
-      if i+1 < len(new_seq) and new_seq[i].new_edge == new_seq[i+1].old_edge:   # (e->f)(f->g)=(e->g)
+      if i+1 < len(new_seq) and new_seq[i].new_edge == new_seq[i+1].old_edge: # (e->f)(f->g)=(e->g)
         left_old  = new_seq[i].old_edge
         right_new = new_seq[i+1].new_edge
         new_seq.pop(i)
@@ -116,15 +129,30 @@ class Feasible_edge_replacement:
 
     if not new_seq:
       new_seq = [self.Individual_Fer({0,1}, {0,1})]
-    return Feasible_edge_replacement(old_edge=None, new_edge=None, permutation=self.seq_perm, sequence=new_seq)
+    
+    self.sequence = new_seq
 
-  def __mul__(self, other):
+  def _simplify(self, times=0):
+    '''
+    Iterates the _simplify method several times. Default times=0 iterates until no change in length is made.
+    '''
+    if times == 0:
+      old_length = len(self) + 1
+      while len(self) < old_length:
+        old_length = len(self)
+        self._simplify_once()
+
+    else:
+      for i in range(times):
+        self._simplify_once()
+
+  def __mul__(self, other): # Concatenates to Fers and updates labels correctly.
     left_perm  = self.seq_perm
     right_perm = other.seq_perm
     left_seq   = self.sequence
-    right_seq  = [fer.update(left_perm) for fer in other.sequence]
+    right_seq  = [fer._update(left_perm) for fer in other.sequence]
     new_fer = Feasible_edge_replacement(old_edge=None, new_edge=None, permutation=left_perm*right_perm, sequence=left_seq+right_seq)
-    new_fer = new_fer.simplify()
+    new_fer._simplify()
     return new_fer
 
   def __getitem__(self, index):
@@ -133,6 +161,7 @@ class Feasible_edge_replacement:
   def __iter__(self):
     return iter(self.sequence)
 
+''' REMOVED to avoid networkx dependency
   def is_of(self, graph): # Decides if fer is a fer of a graph.
     mapping = {}
     g_nodes = graph.nodes()
@@ -163,80 +192,4 @@ class Feasible_edge_replacement:
         ferd_edges.add((j,i))
     
     return ferd_edges == perm_edges
-
- # ================== OBSOLETE CODE ==================
-
-  '''
-  def print_all(self):
-    if self.sequence:
-      perm = str(self.seq_perm)
-      string = ''
-      for ind_fer in self.sequence:
-        string = string + ind_fer.print_all()
-      print(perm + '::' + string)
-    else:
-      print('()')
-
-  def add(self, old_edge, new_edge, permutation=None):
-    ind_fer_to_add = self.Individual_Fer(old_edge, new_edge, permutation)
-    if self.sequence:
-      # Update self.seq_perm to new sequence permutation.
-      old_seq_perm = self.seq_perm
-      self.seq_perm = self.seq_perm*permutation
-      # Conjugate fer to be added to update labels.
-      ind_fer_to_add.update(old_seq_perm)
-
-      # Simplification rules:
-      # Trivial edge replacement doesn't get added. NOTE: the labels were updated above.
-      last_fer = self.sequence[-1]
-      if ind_fer_to_add.old_edge == ind_fer_to_add.new_edge:
-        return
-      
-      # Consecutive replacements that cancel each other get both removed. (e->f)(f->e)=?
-      elif last_fer.new_edge == ind_fer_to_add.old_edge and
-           last_fer.old_edge == ind_fer_to_add.new_edge:
-        self.sequence.pop()
-        return
-      
-      # Consecutive replacements that share an edge get conflated.
-      if last_fer.new_edge == ind_fer_to_add.old_edge: # (e->f)(f->g)=(e->g)
-        self.sequence[-1].new_edge = ind_fer_to_add.new_edge
-        return
-      elif last_fer.old_edge == ind_fer_to_add.new_edge: # (f->g)(e->f)=(e->g)
-        self.sequence[-1].old_edge = ind_fer_to_add.old_edge
-        return
-
-    self.seq_perm = self.seq_perm*permutation
-    self.sequence.append(ind_fer_to_add)
-
-  def _add(self, old_edge, new_edge, permutation=None):
-    ind_fer_to_add = self.Individual_Fer(old_edge, new_edge, permutation)
-    if self.sequence:
-      # We update the new edge replacement, according to the sequence's permutation.
-      old_seq_perm = self.seq_perm 
-      ind_fer_to_add.permute(old_seq_perm)
-
-      # Update the sequence's permutation.
-      self.seq_perm = old_seq_perm*permutation
-      last_added_fer = self.sequence[-1]
-
-      # If edge concatenation is simplifiable:
-      if last_added_fer.new_edge == ind_fer_to_add.old_edge:
-        replace_with = self.Individual_Fer(
-            old_edge=last_added_fer.old_edge,
-            new_edge=ind_fer_to_add.new_edge,
-            permutation=permutation)
-        self.sequence[-1] = replace_with
-      elif last_added_fer.old_edge == ind_fer_to_add.new_edge:
-        replace_with = self.Individual_Fer(
-            old_edge=ind_fer_to_add.old_edge,
-            new_edge=last_added_fer.new_edge,
-            permutation=permutation)
-        self.sequence[-1] = replace_with
-      else:
-        self.sequence.append(ind_fer_to_add)
-
-    else:
-      self.sequence.append(ind_fer_to_add)
-      self.seq_perm = permutation
-  '''
+'''

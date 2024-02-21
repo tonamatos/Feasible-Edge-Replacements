@@ -2,7 +2,7 @@
 """
 Created on Tue Oct 31 12:42:46 2023
 
-@author: Tonatiuh
+@author: Tonatiuh Matos
 """
 from feasible_edge_replacement import Feasible_edge_replacement as Fer
 
@@ -35,7 +35,7 @@ def iso_invert(iso):
 
 def isFer(colored_graph, old_edge, new_edge, allIso=False):
   '''
-  Given NetworkX colored_graph and old_edge=(i,j), new_edge=(x,y), decides
+  Given NetworkX colored_graph and old_edge={i,j}, new_edge={x,y}, decides
   if removing old_edge and adding new_edge produces a graph color-
   isomorphic to the original graph. Returns some isomorphism if True
   and False otherwise. Setting allIso=True, returns all color-isomorphisms
@@ -60,13 +60,6 @@ def isFer(colored_graph, old_edge, new_edge, allIso=False):
   except StopIteration:
     return False
 
-def dict_to_perm(d):
-  """Change a dict d to a list the_list so that d[i] becomes the same as the_list[i]"""
-  the_list = []
-  for i in range(len(d)):
-    the_list.append(d[i])
-  return the_list
-
 def FerGroup(colored_graph):
   '''
   Given a NetworkX colored_graph, returns the group of all Fer objects associated to a single
@@ -81,7 +74,14 @@ def FerGroup(colored_graph):
   nonedges = [(x, y) for (x, y) in alledges if not (x, y) in edges and not (y, x) in edges]
   
   id_per = Per(n-1) # Identity is always feasible.
-  fers = {tuple(id_per) : Fer(old_edge=(0,1), new_edge=(0,1), permutation=id_per)}
+  fers = {tuple(id_per) : Fer(old_edge={0,1}, new_edge={0,1}, permutation=id_per)}
+
+  # Add automorphisms to trivial edge-replacement, as these are always fers.
+  automorphisms = isFer(colored_graph, old_edge={0,1}, new_edge={0,1}, allIso=True)
+  print("Found",len(automorphisms),"automorphisms.")
+  for iso in automorphisms:
+    iso_tuple = tuple(iso[i] for i in range(len(iso)))
+    fers[iso_tuple] = Fer(old_edge={0,1}, new_edge={0,1}, permutation=Per(iso_tuple))
 
   # Iterate over all possible edge-replacements. If feasible, add to hash_map.
   for old_edge in edges:
@@ -89,7 +89,7 @@ def FerGroup(colored_graph):
       iso = isFer(colored_graph, old_edge, new_edge)
       if iso:
         iso_tuple = tuple(iso[i] for i in range(len(iso)))
-        fers[iso_tuple] = Fer(old_edge=old_edge, new_edge=new_edge, permutation=Per(iso_tuple))
+        fers[iso_tuple] = Fer(old_edge=set(old_edge), new_edge=set(new_edge), permutation=Per(iso_tuple))
 
   return fers
 
@@ -231,6 +231,7 @@ def fer_verifier(graph, known_fers):
   Prints any wrong ones.
 
   '''
+  raise ValueError("This method is deprecated.")
   t0 = time()
   how_many = len(known_fers)
   for perm, fer in known_fers.items():
@@ -243,7 +244,7 @@ def add_pairs_prod(hash_fers):
   Given a hash of fers, updates it with all pairs multiplied.
   '''
   tuples_of_perms = hash_fers.keys()
-  for g, h in product(tuples_of_perms,repeat=2):
+  for g, h in product(tuples_of_perms, repeat=2):
     fer_g  = hash_fers[g]
     fer_h  = hash_fers[h]
     fer_gh = fer_g*fer_h
@@ -251,14 +252,14 @@ def add_pairs_prod(hash_fers):
     if gh not in tuples_of_perms:
       hash_fers[gh] = fer_gh
 
-def brute_force_populate(hash_gen, k):
+def brute_force_populate(hash_gen):
   generators = [Per(per) for per in hash_gen.keys()]
   target = PermutationGroup(*generators).order()
   count = 0
   while count < target:
     add_pairs_prod(hash_gen)
     count = len(hash_gen.keys())
-  hash_gen[tuple(Per(k))] = Fer({0,1}, {0,1}, Per(k))
+  #hash_gen[tuple(Per(k))] = Fer({0,1}, {0,1}, Per(k))
 
 def updating_Cayley_populate(hash_gen):
   '''
@@ -280,47 +281,3 @@ def updating_Cayley_populate(hash_gen):
     if tuple(perm) not in hash_keys:
       fact = all_fact[tuple(perm)]
       hash_gen[tuple(perm)] = fact_to_fer(fact, hash_gen)
-
- # ================== OBSOLETE CODE ==================
-'''
-def _perm_invert(perm):
-  return perm**(perm.order()-1)
-
-def _perm_factorization(perm, generators, draw=False):
-  
-  Given sympy.Permutation object perm, factors it into members of generators,
-  assuming these generate the full group. generators must have the same size!
-
-  USE perms_factorization For many factorizations over the same set of generators, it will
-  be more efficient to use the same Cayley graph and add new edges with
-  previously found factorizations before finding the shortest_path, instead
-  of regenerating the entire graph each time.
-  
-  # First check if generators in fact generate the correct size of permutation.
-
-  size = generators[0].size
-
-  # Close generators under inverses.
-  generators = generators + [perm_invert(a) for a in generators if perm_invert(a) not in generators]
-  # Create Cayley graph and find shortest path 
-  cayley_graph = cayley_graph_maker(PermutationGroup(generators), generators)
-  path = nx.shortest_path(cayley_graph, Per(size-1), perm)
-
-  if draw:
-    pos = nx.circular_layout(cayley_graph)
-    labels = nx.get_edge_attributes(cayley_graph, 'label')
-    nx.draw_networkx_nodes(cayley_graph, pos, node_color='teal')
-    nx.draw_networkx_edges(cayley_graph, pos, edge_color='blue')
-    path_edges = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
-    nx.draw_networkx_nodes(cayley_graph, pos, nodelist=path, node_color='red')
-    nx.draw_networkx_edges(cayley_graph, pos, edgelist=path_edges, edge_color='red')
-    nx.draw_networkx_labels(cayley_graph, pos)
-    nx.draw_networkx_edge_labels(cayley_graph, pos, edge_labels=labels)
-    plt.show()
-
-  # Get back the edges as generators
-  genterms = [path[i+1] * perm_invert(path[i]) for i in range(len(path)-1)]
-  genterms.reverse() # Reverse to multiply left-to-right
-
-  return(genterms)
-'''
