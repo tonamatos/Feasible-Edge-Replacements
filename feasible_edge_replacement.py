@@ -95,7 +95,7 @@ class Feasible_edge_replacement:
     string = ''
     for ind_fer in self.sequence:
       string = string + str(ind_fer)
-    return str(self.seq_perm)+'::'+string
+    return f'{str(self.seq_perm):>24}' + ' : ' + string
 
   def __len__(self):
     return len(self.sequence)

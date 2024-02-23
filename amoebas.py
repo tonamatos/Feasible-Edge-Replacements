@@ -20,6 +20,8 @@ from itertools import product, combinations, permutations
 
 def edge_replace(graph, old_edge, new_edge):
   new_graph = graph.copy()
+  if set(old_edge) == set(new_edge):
+    return new_graph
   new_graph.remove_edge(*old_edge)
   new_graph.add_edge(*new_edge)
   return new_graph
