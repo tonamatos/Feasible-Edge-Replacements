@@ -80,7 +80,7 @@ def FerGroup(colored_graph):
 
   # Add automorphisms to trivial edge-replacement, as these are always fers.
   automorphisms = isFer(colored_graph, old_edge={0,1}, new_edge={0,1}, allIso=True)
-  print("Found",len(automorphisms),"automorphisms.")
+  #print("Found",len(automorphisms),"automorphisms.")
   for iso in automorphisms:
     iso_tuple = tuple(iso[i] for i in range(len(iso)))
     fers[iso_tuple] = Fer(old_edge={0,1}, new_edge={0,1}, permutation=Per(iso_tuple))
@@ -106,7 +106,7 @@ def color_count(G):
 
   return color_counts
 
-def isLocalColoredAmoeba(colored_graph):
+def isLocalColoredAmoeba(colored_graph,comments=False):
   '''
   Given a networkX object colored_graph, decides if it is a local amoeba.
   '''
@@ -120,8 +120,9 @@ def isLocalColoredAmoeba(colored_graph):
 
   group = PermutationGroup([fer.seq_perm for fer in FerGroup(colored_graph).values()])
   order = group.order()
-  print("Time taken:",time()-time0)
-  print("There are", full_group, "color-compliant permutations and", order, "are associated to Fer objects.")
+  if comments:
+    print("Time taken:",time()-time0)
+    print("There are", full_group, "color-compliant permutations and", order, "are associated to Fer objects.")
   return order == full_group
   
 # GENERATORS
