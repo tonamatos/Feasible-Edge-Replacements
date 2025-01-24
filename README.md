@@ -30,7 +30,7 @@ The algorithm produces a hash map that links every permutation in a generating s
 
 ## Mathematical background
 
-Let $G$ be a graph and $e$ an edge of $G$. We say $(e\to g)$ is a *feasible edge replacement* (`Fer`, for short) if $G-e+g$ is isomorphic to $G$. We say a graph is an *amoeba* is it can be transformed into any isomorphic copy of itself by means of a sequence of `Fer` objects. For more details on amoebas and the difference between *local* and *global* amoebas, consult [2].
+Let $G$ be a graph and $e$ an edge of $G$. We say $(e\to g)$ is a *feasible edge replacement* (`Fer`, for short) if $G-e+g$ is isomorphic to $G$. We say a graph is an *amoeba* if it can be transformed into any isomorphic copy of itself by means of a sequence of `Fer` objects. For more details on amoebas and the difference between *local* and *global* amoebas, consult [2].
 
 This repo offers a class for `Fer` objects to study amoebas. Relevant operations are defined for these objects. This class is extensively used in the algorithms presented below.
 
