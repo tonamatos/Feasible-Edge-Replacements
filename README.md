@@ -1,5 +1,7 @@
 # Feasible Edge Replacements — Algorithmic Companion to [1]
 
+[![DOI](https://zenodo.org/badge/721423479.svg)](https://doi.org/10.5281/zenodo.19351470)
+
 This repository is the algorithmic companion to the paper [1]. It provides a Python implementation of the permutation-factoring algorithms described in Section 5 of that paper, applied to the recursive family of Fibonacci-type trees introduced therein.
 
 > **Note:** The `Fer` class and general amoeba methods in this repository have since been greatly expanded. For a more complete and actively maintained library, see the [FerGroup repository](https://github.com/tonamatos/FerGroup) and its [documentation](https://fergroup.research.wiederhold.dev/). This repository exists solely as a research artifact for the paper cited below.
