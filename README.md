@@ -1,84 +1,79 @@
-# Feasible Edge Replacements - Class and Algorithms
+# Feasible Edge Replacements — Algorithmic Companion to [1]
 
-## About
+This repository is the algorithmic companion to the paper [1]. It provides a Python implementation of the permutation-factoring algorithms described in Section 5 of that paper, applied to the recursive family of Fibonacci-type trees introduced therein.
 
-<table>
-<tr>
-<td>
-
-<p align="center">
-<img src="./k6.gif" width="300"/>
-</p>
-
-</td>
-<td>
-This repo contains four things:
-
-- A class for `Fer` objects in **feasible_edge_replacement.py**.
-- Some general methods for the study of amoeba graphs in **amoebas.py**. In particular, a method for finding `Fer` generators (called `updating_Cayley_populate`), something that is referenced but left out of [1].
-- An implementation of the algorithm of [1] in **main.py**.
-- A construction of a recursive family of amoebas to apply the algorithm to, for illustrative purposes, in **treebonacci.py**.
-
-</td>
-</tr>
-</table>
-
-Every `Fer` object has two attributes: a sequence of feasible edge replacements and its corresponding permutation. The length of a sequence can be obtained by `len(fer)`. The product `*` of two `Fer` objects multiplies their permutations and concatenates the edge replacements, updating the labels. 
-> Note that products are written **left-to-right**, in contrast with traditional algebraic notation.<br/>
-
-The algorithm produces a hash map that links every permutation in a generating set of the symmetric group to a `Fer` object.
-
-## Mathematical background
-
-Let $G$ be a graph and $e$ an edge of $G$. We say $(e\to g)$ is a *feasible edge replacement* (`Fer`, for short) if $G-e+g$ is isomorphic to $G$. We say a graph is an *amoeba* if it can be transformed into any isomorphic copy of itself by means of a sequence of `Fer` objects. For more details on amoebas and the difference between *local* and *global* amoebas, consult [2].
-
-This repo offers a class for `Fer` objects to study amoebas. Relevant operations are defined for these objects. This class is extensively used in the algorithms presented below.
-
-In the paper [1], it is proved that a certain recursive family of graphs are all amoebas. In this repo, we give an implementation of the algorithm decribed in Section 5 that will factor any permutation of a *stem-symmetric* (see Definition 6 of [1]) amoeba into `Fer` objects in time $\Theta(n^2)$, where $n$ is the order of the graph. This succesfully provides an efficient method of finding, for any isomorphic copy of the amoeba, a sequence of replacements that will move the graph into its copy.
-
-Furthermore, this repo contains a construction of one such type of recursive family, called Fibonacci-type trees in [1], to serve as an illustrative example of the algorithm.
-
-## Instructions
-
-To use the algorithm, we need to provide a stem-symmetric recursive construction similar to the one given in Theorem 8 of [1]. One such example is provided in **treebonacci.py**.
-
-Here is a minimal working example on how to use the main features of this repo:
-
-1. Download the folder and leave all Python scripts in the same working directory.
-2. Install all dependencies.
-3. Open **main.py** in your favorite editor and provide an input for `k` and `permutation`. Default is $k=6$ and random.
-4. Output will be the sought sequence.
-5. To verify the `Fer` objects, use `fer_verifier` in **amoebas.py**.
-6. To change the family of graphs, change line 8 `import treebonacci as trb` and provide a valid stem-symmetric recursive amoeba family. Note you may need to use the methods in **amoebas.py** to regenerate the basis objects.
-7. To animate the edge-replacements, wait for me to upload the animation module.
+> **Note:** The `Fer` class and general amoeba methods in this repository have since been greatly expanded. For a more complete and actively maintained library, see the [FerGroup repository](https://github.com/tonamatos/FerGroup) and its [documentation](https://fergroup.research.wiederhold.dev/). This repository exists solely as a research artifact for the paper cited below.
 
 ---
 
-### This program was developed by
+## Algorithms
 
-<table>
-<tr>
-<td>
+The main contribution of this codebase is the recursive implementation of the stem-symmetric factoring algorithm (Section 5 of [1]):
 
-- Tonatiuh Matos-[Wiederhold.dev](https://wiederhold.dev)<br/>
-  Dept. of Mathematics, University of Toronto, Canada.<br/>
-  tonamatos@gmail.com
+- Given a permutation $\sigma$ of a **stem-symmetric** amoeba $G_k$ from a recursive family, the algorithm produces a sequence of feasible edge replacements whose composition maps $G_k$ to $\sigma(G_k)$.
+- The algorithm runs in $\Theta(n^2)$ time, where $n$ is the order of $G_k$. An improved $O(n\log n)$ algorithm is presented in the author's PhD thesis.
+- The factoring is carried out recursively on the structure of the tree, using a fixed set of base cases computed up to $k = 4$.
 
-  Based on the research of [1], below.
+The implementation in `main.py` applies this algorithm to the Fibonacci-type trees $T_k$ defined in `treebonacci.py`.
 
-</td>
-<td>
+---
 
-<p align="center">
-<img src="./Ammonia_tepida.jpg" width="300"/>
-</p>
+## Structure
 
-</td>
-</tr>
-</table>
+| File | Description |
+|------|-------------|
+| `main.py` | Runs the stem-symmetric algorithm on $T_k$ for a given input permutation |
+| `treebonacci.py` | Constructs the recursive family of Fibonacci-type trees and their structural parameters |
+| `amoebas.py` | Graph-theoretic utilities: Cayley graph factorization, Fer generators, amoeba verification |
+| `feasible_edge_replacement.py` | `Fer` class: sequences of feasible edge replacements with permutation composition |
+
+---
+
+## Setup
+
+Requires Python 3.8+.
+
+```bash
+git clone https://github.com/tonamatos/Feasible-Edge-Replacements.git
+cd Feasible-Edge-Replacements
+pip install -r requirements.txt
+```
+
+---
+
+## Running
+
+```bash
+python main.py
+```
+
+This runs the algorithm on a random permutation of $T_6$ (the Fibonacci-type tree at level $k=6$, with $2F_6 = 16$ vertices). To change the input, edit the `k` and `permutation` variables in `main.py`. The output is the resulting sequence of feasible edge replacements.
+
+To verify correctness of the output, call `fer_verifier` from `amoebas.py`:
+
+```python
+from amoebas import fer_verifier
+import treebonacci as trb
+T = trb.Treebonacci(k)
+fer_verifier(T[k], known_fer)
+```
+
+---
+
+## Mathematical background
+
+A *feasible edge replacement* (`Fer`) $(e \to g)$ of a graph $G$ is a pair of edges such that $G - e + g \cong G$. A graph is an *amoeba* if any isomorphic copy can be reached by a sequence of Fers. For full definitions see [2].
+
+Paper [1] proves that the Fibonacci-type trees $T_k$ are amoebas and provides an efficient algorithm to factor any permutation into Fers by exploiting the recursive (stem-symmetric) structure of the family.
+
+---
 
 ## References
 
-[1] Eslava, L., Hansberg, A., _, Ventura, D., *New recursive constructions of amoebas and their balancing number*, **Aequationes Mathematicae**, 2023. [Link](http://arxiv.org/abs/2311.17182)
+[1] Eslava, L., Hansberg, A., Matos-Wiederhold, T., Ventura, D. *New recursive constructions of amoebas and their balancing number*. **Aequationes Mathematicae** 99 (2025), 1265–1299. [arXiv:2311.17182](https://arxiv.org/abs/2311.17182)
 
-[2] Caro, Y., Hansberg, A., Montejano, A. (2023). *Graphs isomorphisms under edge-replacements and the family of amoebas*. **Electronic Journal of Combinatorics** 30(3) P3.9. [Link](https://www.combinatorics.org/ojs/index.php/eljc/article/download/v30i3p9/pdf)
+[2] Caro, Y., Hansberg, A., Montejano, A. *Graphs isomorphisms under edge-replacements and the family of amoebas*. **Electronic Journal of Combinatorics** 30(3) P3.9 (2023). [Link](https://www.combinatorics.org/ojs/index.php/eljc/article/download/v30i3p9/pdf)
+
+---
+
+**Author:** Tonatiuh Matos-Wiederhold, Department of Mathematics, University of Toronto.

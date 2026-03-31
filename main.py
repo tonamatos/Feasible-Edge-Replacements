@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Nov  7 16:56:17 2023
-
-@author: Tonatiuh
-"""
 from amoebas import perm_fact_into_trans, fact_to_fer, fer_verifier
 import treebonacci as trb
 from feasible_edge_replacement import Feasible_edge_replacement as Fer
@@ -84,17 +78,6 @@ def trans_to_fer(x, k):
 
 #=============================== MAIN ALGORITHM ===============================
 
-#---------------- 0. GENERATE TREES AND FIND GENERATORS UP TO 4 ---------------
-#print(*[str(Per(per))+' : '+str(len(fer))+'\n' for per,fer in hash_gen[4].items() if len(fer) == 3])
-#print("Here dummy",len(hash_gen[4][tuple(Per(5)(1,3))]))
-
-#------------------------------[VERIFY GENERATORS]-----------------------------
-#T_k = trb.Treebonacci(8)
-#fer_verifier(T_k[1], hash_gen[1])
-#fer_verifier(T_k[2], hash_gen[2])
-#fer_verifier(T_k[3], hash_gen[3])
-#fer_verifier(T_k[4], hash_gen[4])
-
 #--------------------------------- 0. INPUT -----------------------------------
 k = 6
 
@@ -103,8 +86,6 @@ for x in range(0,trb.fibs(k),2):
   permutation = permutation*Per(x, x+1)
   
 permutation = Per(*tuple(randomIso(k).cyclic_form[0])).resize(trb.fibs(k))
-  
-#permutation = Per(1,trb.fibs(k)-1)
 
 #-------------------- 1. FACTOR PERMUTATION INTO GENERATORS -------------------
 y0 = 1 # Or any element of B\{b}. In our labeling, b=0.
@@ -128,10 +109,5 @@ print("Found Fer in time:",time()-t0)
 fer = fact_to_fer(fact_in_trans, known_fer)  
 
 #--------------------------------- 4. OUTPUT ----------------------------------
-#T = T_k[k]
-#fer_verifier(T, known_fer)
-
 print(*[str(f)+'\n' for f in fer])
-#l = len(fer)
-#print("Fer len is",l)
 #==============================================================================

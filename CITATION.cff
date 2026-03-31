@@ -9,16 +9,19 @@ message: >-
 type: software
 authors:
   - given-names: Tonatiuh
-    family-names: Matos Wiederhold
+    family-names: Matos-Wiederhold
     email: tonamatos@gmail.com
     affiliation: University of Toronto
     orcid: 'https://orcid.org/0000-0002-3142-037X'
 repository-code: 'https://github.com/tonamatos/Feasible-Edge-Replacements'
 abstract: >-
-  Class of objects for working with general feasible edge
-  replacements to study Amoeba graphs. Also algorithms based
-  on a WIP research paper to factor permutations in
-  recursive Amoeba trees efficiently.
+  Algorithmic companion to the paper "New recursive constructions
+  of amoebas and their balancing number" (Eslava, Hansberg,
+  Matos-Wiederhold, Ventura; Aequationes Mathematicae, 2025).
+  Implements the stem-symmetric permutation-factoring algorithm
+  from Section 5 of that paper, applied to the recursive family
+  of Fibonacci-type trees. Also includes a Fer class and
+  supporting utilities for feasible edge replacements.
 keywords:
   - Graph theory
   - Research

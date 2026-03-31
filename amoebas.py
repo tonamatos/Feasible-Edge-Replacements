@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Oct 31 12:42:46 2023
-
-@author: Tonatiuh
-"""
 from feasible_edge_replacement import Feasible_edge_replacement as Fer
 
 import networkx as nx
@@ -14,7 +8,6 @@ from sympy.combinatorics.permutations import Permutation as Per
 from sympy.combinatorics.perm_groups import PermutationGroup
 import matplotlib.pyplot as plt
 from itertools import product, combinations, permutations
-#from functools import cache
 
 # DECISION ALGORITHMS
 
@@ -111,9 +104,6 @@ def perms_factorization(perms, generators, update=False, draw=False):
   t0 = time()
   size = generators[0].size - 1
 
-  # Close generators under inverses.
-  #generators = generators + [a**(-1) for a in generators if a**(-1) not in generators]
-  
   # Create Cayley graph and find shortest path
   cayley_graph = cayley_graph_maker(PermutationGroup(generators), generators)
   factorizations = {tuple(Per(size)) : [Per(size)]}
@@ -159,7 +149,6 @@ def perms_factorization(perms, generators, update=False, draw=False):
         
     if update:
       cayley_graph_update(cayley_graph, PermutationGroup(generators), [perm, perm**(-1)])
-  #print("Time to factor all permutations:",time()-t0)
   return(factorizations)
 
 def perm_fact_into_trans(perm, y0):
@@ -241,47 +230,3 @@ def updating_Cayley_populate(hash_gen):
     if tuple(perm) not in hash_keys:
       fact = all_fact[tuple(perm)]
       hash_gen[tuple(perm)] = fact_to_fer(fact, hash_gen)
-
- # ================== OBSOLETE CODE ==================
-'''
-def _perm_invert(perm):
-  return perm**(perm.order()-1)
-
-def _perm_factorization(perm, generators, draw=False):
-  
-  Given sympy.Permutation object perm, factors it into members of generators,
-  assuming these generate the full group. generators must have the same size!
-
-  USE perms_factorization For many factorizations over the same set of generators, it will
-  be more efficient to use the same Cayley graph and add new edges with
-  previously found factorizations before finding the shortest_path, instead
-  of regenerating the entire graph each time.
-  
-  # First check if generators in fact generate the correct size of permutation.
-
-  size = generators[0].size
-
-  # Close generators under inverses.
-  generators = generators + [perm_invert(a) for a in generators if perm_invert(a) not in generators]
-  # Create Cayley graph and find shortest path 
-  cayley_graph = cayley_graph_maker(PermutationGroup(generators), generators)
-  path = nx.shortest_path(cayley_graph, Per(size-1), perm)
-
-  if draw:
-    pos = nx.circular_layout(cayley_graph)
-    labels = nx.get_edge_attributes(cayley_graph, 'label')
-    nx.draw_networkx_nodes(cayley_graph, pos, node_color='teal')
-    nx.draw_networkx_edges(cayley_graph, pos, edge_color='blue')
-    path_edges = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
-    nx.draw_networkx_nodes(cayley_graph, pos, nodelist=path, node_color='red')
-    nx.draw_networkx_edges(cayley_graph, pos, edgelist=path_edges, edge_color='red')
-    nx.draw_networkx_labels(cayley_graph, pos)
-    nx.draw_networkx_edge_labels(cayley_graph, pos, edge_labels=labels)
-    plt.show()
-
-  # Get back the edges as generators
-  genterms = [path[i+1] * perm_invert(path[i]) for i in range(len(path)-1)]
-  genterms.reverse() # Reverse to multiply left-to-right
-
-  return(genterms)
-'''

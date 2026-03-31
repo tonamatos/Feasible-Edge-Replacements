@@ -1,13 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Nov 13 09:27:03 2023
-
-@author: Tonatiuh
-"""
 from feasible_edge_replacement import Feasible_edge_replacement as Fer
 
 import networkx as nx
-from time import time
 from sympy.combinatorics.permutations import Permutation as Per
 from functools import cache
 from amoebas import updating_Cayley_populate
@@ -16,13 +9,12 @@ from functools import reduce
 fib = lambda n:reduce(lambda x,n:[x[1],x[0]+x[1]], range(n),[0,1])[0]
 fibs = lambda i:2*fib(i)
 
-def getMaxdegree(G): # Regresa un vértice de grado máximo.
+def getMaxdegree(G):
   dic = dict(G.degree())
   return max(dic, key=dic.get)
 
-def Treebonacci(k): # Genera los primeros n>3 árboles de Fibonacci.
+def Treebonacci(k):
   k += 1
-  t0 = time()
   T = [nx.empty_graph(),
        nx.path_graph(2),
        nx.path_graph(2)]
@@ -44,11 +36,8 @@ def Treebonacci(k): # Genera los primeros n>3 árboles de Fibonacci.
           Ti[x][y]['color'] = 'blue'
 
     T.append(Ti)
-  #print("Time to generate trees:",time()-t0)
   return T
 
-# Treebonacci-specific parameters:
-  return rho
 @cache
 def Tk_roots(k):
   '''
@@ -104,8 +93,6 @@ def Tk_generators():
   algorithm, this list SHOULD be enough to generate the permutationgroups, and
   thus we can factor any permutation over this hash_map to find its fer.
   '''
-  t0 = time()
-  
   # Inductive base. NOTE: called hashable function to use @cache decorator.
   hash_fers = [{},
                {tuple(Per(0,1))      : Fer({0,1}, {0,1}, Per(0,1))},
@@ -123,6 +110,4 @@ def Tk_generators():
   hash_fers.append(hash_fers3)
   updating_Cayley_populate(hash_fers4)
   hash_fers.append(hash_fers4)
-
-  #print("Time to generate base hash maps:",time()-t0)
   return hash_fers
